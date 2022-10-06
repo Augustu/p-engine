@@ -1,8 +1,7 @@
-# p-engine
+# PEngine
 physics engine
 
 ### 粒子 demo
 放大版粒子
 
-
-![particle](image\particle.gif)
+![particle](images/particle.gif)

@@ -7,8 +7,8 @@ namespace pengine
     Particle::Particle(float mass)
     {
         // SetMass(mass);
-        SetVertShaderPath("../assert/particle/vertShader.glsl");
-        SetFragShaderPath("../assert/particle/fragShader.glsl");
+        SetVertShaderPath("../asserts/particle/vertShader.glsl");
+        SetFragShaderPath("../asserts/particle/fragShader.glsl");
 
         LoadVertShader();
         LoadFragShader();
