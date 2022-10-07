@@ -42,8 +42,6 @@ namespace pengine
                 vertices.push_back(x);
                 vertices.push_back(y);
                 vertices.push_back(z);
-
-                // std::cout << i+j+1 << " " << "x: " << x << " y: " << y << " z: " << z << std::endl;
             }
 
             for (int j=0; j<mesh->mNumFaces; j++)
@@ -57,7 +55,6 @@ namespace pengine
             }
         }
 
-        // std::cout << indices.size() << std::endl;
     }
 
 

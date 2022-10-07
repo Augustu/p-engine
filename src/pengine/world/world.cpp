@@ -85,7 +85,11 @@ namespace pengine
         glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
         glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
 
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        for (Object object : objects)
+        {
+            // glDrawElements(GL_TRIANGLES, object.Indices().size(), GL_UNSIGNED_INT, 0);
+            glDrawArrays(GL_TRIANGLES, 0, object.Indices().size());
+        }
     }
 
     int World::Run()
@@ -134,6 +138,7 @@ namespace pengine
 
             // use pointer, avoid copy in updateBuffers
             std::vector<float>* vertices = objects[i].ModelVertices();
+            std::cout << "vertices: " << vertices->size() << std::endl;
             (*objectVertices)[i] = vertices;
             glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(float), vertices->data(), GL_STATIC_DRAW);
 
@@ -143,6 +148,7 @@ namespace pengine
             std::vector<int> indices = objects[i].Indices();
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo[i]);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
+            std::cout << "indices: " << indices.size() << std::endl;
         }
     }
 
