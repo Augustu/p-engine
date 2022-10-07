@@ -3,6 +3,10 @@
 #include <assert.h>
 #include <iostream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace pengine
 {
     World::World(int windowWidth, int windowHeight, std::string windowTitle,
@@ -48,11 +52,6 @@ namespace pengine
     void World::init(GLFWwindow* window)
     {
         renderingProgram = glCreateProgram();
-        // TODO
-        // renderingProgram = createShaderProgram(vertShaderPath, fragShaderPath);
-        // cameraX = 0.0f; cameraY = 0.0f; cameraZ = 8.0f;
-        // cubeLocX = 0.0f; cubeLocY = -2.0f; cubeLocZ = 0.0f; // shift down Y to reveal perspective
-
     }
 
     void World::display(GLFWwindow* window, double currentTime)
@@ -61,10 +60,6 @@ namespace pengine
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(renderingProgram);
-        glPointSize(30.0f);
-        glDrawArrays(GL_POINTS, 0, 1);
-        // glDrawArrays(GL_POINTS, 0, 36);
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
 
         double elapseTime = currentTime - this->currentTime;
         this->currentTime = currentTime;
@@ -72,40 +67,25 @@ namespace pengine
         updateObjects(elapseTime);
         updateBuffers();
 
-        // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-        // glEnableVertexAttribArray(0);
+        // get the uniform variables for the MV and projection matrices
+        GLuint mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
+        GLuint projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
 
+        // build perspective matrix
+        glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+        float aspect = (float)windowWidth / (float)windowHeight;
+        glm::mat4 pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f); // 1.0472 radians = 60 degrees
 
-        // glUseProgram(renderingProgram);
+        // build view matrix, model matrix, and model-view matrix
+        glm::mat4 vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
+        glm::mat4 mMat = glm::translate(glm::mat4(1.0f), glm::vec3(focusX, focusY, focusZ));
+        glm::mat4 mvMat = vMat * mMat;
 
-        // // get the uniform variables for the MV and projection matrices
-        // mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
-        // projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
+        // copy perspective and MV matrices to corresponding uniform variables
+        glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
+        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
 
-        // // build perspective matrix
-        // glfwGetFramebufferSize(window, &width, &height);
-        // aspect = (float)width / (float)height;
-        // pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f); // 1.0472 radians = 60 degrees
-
-        // // build view matrix, model matrix, and model-view matrix
-        // vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
-        // mMat = glm::translate(glm::mat4(1.0f), glm::vec3(cubeLocX, cubeLocY, cubeLocZ));
-        // mvMat = vMat * mMat;
-
-        // // copy perspective and MV matrices to corresponding uniform variables
-        // glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
-        // glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
-
-        // associate VBO with the corresponding vertex attribute in the vertex shader
-        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-        glEnableVertexAttribArray(0);
-
-        // adjust OpenGL settings and draw model
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LEQUAL);
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     }
 
     int World::Run()
@@ -141,21 +121,28 @@ namespace pengine
 
         vao = new GLuint[numOfObjects];
         vbo = new GLuint[numOfObjects];
+        ibo = new GLuint[numOfObjects];
 
         glGenVertexArrays(numOfObjects, vao);
         glGenBuffers(numOfObjects, vbo);
+        glGenBuffers(numOfObjects, ibo);
 
         for (int i = 0; i < numOfObjects; ++i)
         {
             glBindVertexArray(vao[i]);
             glBindBuffer(GL_ARRAY_BUFFER, vbo[i]);
 
+            // use pointer, avoid copy in updateBuffers
             std::vector<float>* vertices = objects[i].ModelVertices();
             (*objectVertices)[i] = vertices;
-            glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(float), vertices->data(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(float), vertices->data(), GL_STATIC_DRAW);
 
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
             glEnableVertexAttribArray(i);
+
+            std::vector<int> indices = objects[i].Indices();
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo[i]);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
         }
     }
 

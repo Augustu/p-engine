@@ -4,6 +4,17 @@
 
 namespace pengine
 {
+    Object::Object()
+    {
+        //
+    }
+
+    Object::Object(std::string modelPath)
+    {
+        SetModelPath(modelPath);
+        LoadModel();
+    }
+
     std::vector<float> Object::Vertices()
     {
         return vertices;
@@ -74,6 +85,15 @@ namespace pengine
             std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
             exit(-1);
         }
+    }
+
+    void Object::LoadShaders(std::string vertShaderPath, std::string fragShaderPath)
+    {
+        SetVertShaderPath(vertShaderPath);
+        SetFragShaderPath(fragShaderPath);
+
+        LoadVertShader();
+        LoadFragShader();
     }
 
     GLuint Object::VertShader()

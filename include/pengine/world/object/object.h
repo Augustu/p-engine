@@ -20,6 +20,8 @@ namespace pengine
         GLuint fragShader;
 
     public:
+        Object();
+        Object(std::string modelPath);
         virtual std::vector<float> Vertices();
         std::vector<float>* ModelVertices();
         void Update(float elapseTime);
@@ -29,6 +31,8 @@ namespace pengine
 
         void LoadVertShader();
         void LoadFragShader();
+
+        void LoadShaders(std::string vertShaderPath, std::string fragShaderPath);
 
         GLuint VertShader();
         GLuint FragShader();

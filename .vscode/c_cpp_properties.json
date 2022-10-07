@@ -36,11 +36,11 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}/include",
-                    "${workspaceFolder}/include",
                     "${workspaceFolder}"
                 ],
                 "limitSymbolsToIncludedHeaders": true
-            }
+            },
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4
