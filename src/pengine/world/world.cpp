@@ -65,7 +65,7 @@ namespace pengine
         this->currentTime = currentTime;
 
         updateObjects(elapseTime);
-        updateBuffers();
+        // updateBuffers();
 
         // get the uniform variables for the MV and projection matrices
         GLuint mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
@@ -125,30 +125,48 @@ namespace pengine
 
         vao = new GLuint[numOfObjects];
         vbo = new GLuint[numOfObjects];
-        ibo = new GLuint[numOfObjects];
+        ebo = new GLuint[numOfObjects];
 
         glGenVertexArrays(numOfObjects, vao);
         glGenBuffers(numOfObjects, vbo);
-        glGenBuffers(numOfObjects, ibo);
+        glGenBuffers(numOfObjects, ebo);
 
         for (int i = 0; i < numOfObjects; ++i)
         {
+            Object object = objects[i];
+            std::vector<Vertex> vertices = object.MeshVertices();
+            std::vector<int> indices = object.Indices();
+
             glBindVertexArray(vao[i]);
             glBindBuffer(GL_ARRAY_BUFFER, vbo[i]);
 
-            // use pointer, avoid copy in updateBuffers
-            std::vector<float>* vertices = objects[i].ModelVertices();
-            std::cout << "vertices: " << vertices->size() << std::endl;
-            (*objectVertices)[i] = vertices;
-            glBufferData(GL_ARRAY_BUFFER, vertices->size() * sizeof(float), vertices->data(), GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-            glEnableVertexAttribArray(i);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo[i]);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), &indices[0], GL_STATIC_DRAW);
 
-            std::vector<int> indices = objects[i].Indices();
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo[i]);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(int), indices.data(), GL_STATIC_DRAW);
-            std::cout << "indices: " << indices.size() << std::endl;
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+
+            glEnableVertexAttribArray(3);
+            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+
+            glEnableVertexAttribArray(4);
+            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+            // ids
+            glEnableVertexAttribArray(5);
+            glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, m_BoneIDs));
+
+            // weights
+            glEnableVertexAttribArray(6);
+            glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_Weights));
         }
     }
 

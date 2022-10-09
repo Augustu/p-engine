@@ -13,6 +13,7 @@ namespace pengine
     {
         SetModelPath(modelPath);
         LoadModel();
+        std::cout << "load model done" << std::endl;
     }
 
     std::vector<float> Object::Vertices()

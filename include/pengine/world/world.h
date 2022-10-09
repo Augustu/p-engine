@@ -26,7 +26,7 @@ namespace pengine
         GLuint renderingProgram;
         GLuint* vao;
         GLuint* vbo;
-        GLuint* ibo;
+        GLuint* ebo;
 
         std::vector<Object> objects;
 
