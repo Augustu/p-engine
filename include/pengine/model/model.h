@@ -35,6 +35,16 @@ namespace pengine
         unsigned int id;
         std::string type;
         std::string path;
+        unsigned char *data;
+        int width;
+        int height;
+        int nrComponents;
+    };
+
+    struct Mesh {
+        std::vector<Vertex> vertices;
+        std::vector<Texture> textures;
+        std::vector<unsigned int> indices;
     };
 
     class Model
@@ -43,12 +53,14 @@ namespace pengine
         std::string modelPath;
         std::string directory;
 
+        int numMesh = 0;
+
     protected:
         std::vector<float> vertices;
-        std::vector<Vertex> meshVertices;
-        std::vector<int> indices;
-        std::vector<Texture> textures;
+        std::vector<unsigned int> indices;
         std::vector<Texture> textures_loaded;
+        std::vector<Mesh> meshes;
+        
 
     public:
         Model();
@@ -57,12 +69,11 @@ namespace pengine
         void processNode(aiNode *node, const aiScene *scene);
         void processMesh(aiMesh *mesh, const aiScene *scene);
         std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
-        unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma);
+        unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma, Texture *texture);
         std::vector<float> Vertices();
-        std::vector<Vertex> MeshVertices();
-        std::vector<int> Indices();
         void SetVertices(std::vector<float> vertices);
         void UpdateVertices(glm::vec3 position);
+        std::vector<Mesh> GetMeshes();
     };
 }
 

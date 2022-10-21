@@ -5,7 +5,7 @@ namespace pengine
     Sphere::Sphere(int prec) {   // prec是精度，也就是切片的数量
         init(prec);
 
-        std::vector<int> ind = getIndices();
+        std::vector<unsigned int> ind = getIndices();
 
         int numIndices = getNumIndices();
         for (int i = 0; i < numIndices; i++) {
@@ -82,7 +82,7 @@ namespace pengine
     // 读取函数
     int Sphere::getNumVertices() { return numVertices; }
     int Sphere::getNumIndices() { return numIndices; }
-    std::vector<int> Sphere::getIndices() { return indices; }
+    std::vector<unsigned int> Sphere::getIndices() { return indices; }
     std::vector<glm::vec3> Sphere::getVertices() { return Vec3Vertices; }
     std::vector<glm::vec2> Sphere::getTexCoords() { return texCoords; }
     std::vector<glm::vec3> Sphere::getNormals() { return normals; }

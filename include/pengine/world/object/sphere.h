@@ -30,7 +30,7 @@ namespace pengine
         void Update(float elapseTime);
         int getNumVertices();
         int getNumIndices();
-        std::vector<int> getIndices();
+        std::vector<unsigned int> getIndices();
         std::vector<glm::vec3> getVertices();
         std::vector<glm::vec2> getTexCoords();
         std::vector<glm::vec3> getNormals();

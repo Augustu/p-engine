@@ -1,3 +1,5 @@
+#include <pengine/common.h>
+
 #include <pengine/world/object/object.h>
 
 #include <pengine/glsl/glsl.h>
@@ -13,7 +15,7 @@ namespace pengine
     {
         SetModelPath(modelPath);
         LoadModel();
-        std::cout << "load model done" << std::endl;
+        LOG(INFO) << "load model done";
     }
 
     std::vector<float> Object::Vertices()

@@ -10,6 +10,20 @@
 
 namespace pengine
 {
+    struct GLTexture {
+        GLuint id;
+        std::string type;
+    };
+
+    struct GLObject {
+        GLuint vao;
+        GLuint vbo;
+        GLuint ebo;
+        std::vector<GLuint> textureIDs;
+        std::vector<GLTexture> glTextures;
+        int indicesSize;
+    };
+
     class World
     {
     private:
@@ -24,14 +38,15 @@ namespace pengine
         float focusZ;
 
         GLuint renderingProgram;
-        GLuint* vao;
-        GLuint* vbo;
-        GLuint* ebo;
 
         std::vector<Object> objects;
 
         double currentTime;
         std::vector<std::vector<float>*>* objectVertices;
+
+        std::vector<GLuint> vaos;
+        std::vector<int> indicesSizes;
+        std::vector<GLObject> glObjects;
 
     public:
         float cameraX;
