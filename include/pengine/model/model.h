@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -55,17 +56,32 @@ namespace pengine
 
         int numMesh = 0;
 
+        std::string vertShaderPath;
+        std::string fragShaderPath;
+
+        GLuint vertShader;
+        GLuint fragShader;
+
     protected:
         std::vector<float> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures_loaded;
         std::vector<Mesh> meshes;
-        
+
 
     public:
         Model();
         void SetModelPath(std::string modelPath);
         void LoadModel();
+        void SetVertShaderPath(std::string vertShaderPath);
+        void SetFragShaderPath(std::string fragShaderPath);
+
+        void LoadVertShader();
+        void LoadFragShader();
+
+        GLuint VertShader();
+        GLuint FragShader();
+
         void processNode(aiNode *node, const aiScene *scene);
         void processMesh(aiMesh *mesh, const aiScene *scene);
         std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);

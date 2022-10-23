@@ -8,34 +8,34 @@
 
 #include <GL/glew.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace pengine
 {
-    class Object : public MassPoint, public Model
+    class Object : public MassPoint
     {
     private:
-        std::string vertShaderPath;
-        std::string fragShaderPath;
+        Model* model;
 
-        GLuint vertShader;
-        GLuint fragShader;
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
 
     public:
         Object();
         Object(std::string modelPath);
+        void SetModel(Model* model);
         virtual std::vector<float> Vertices();
-        std::vector<float>* ModelVertices();
         void Update(float elapseTime);
 
-        void SetVertShaderPath(std::string vertShaderPath);
-        void SetFragShaderPath(std::string fragShaderPath);
-
-        void LoadVertShader();
-        void LoadFragShader();
+        std::vector<Mesh> GetMeshes();
 
         void LoadShaders(std::string vertShaderPath, std::string fragShaderPath);
 
         GLuint VertShader();
         GLuint FragShader();
+
+        glm::mat4 ModelMatrix();
     };
 }
 

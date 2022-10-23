@@ -6,6 +6,8 @@
 
 #include <pengine/world/object/object.h>
 
+#include <pengine/force/gravity/point.h>
+
 #include <string>
 
 namespace pengine
@@ -39,7 +41,7 @@ namespace pengine
 
         GLuint renderingProgram;
 
-        std::vector<Object> objects;
+        std::vector<Object*> objects;
 
         double currentTime;
         std::vector<std::vector<float>*>* objectVertices;
@@ -47,6 +49,7 @@ namespace pengine
         std::vector<GLuint> vaos;
         std::vector<int> indicesSizes;
         std::vector<GLObject> glObjects;
+        std::vector<GravityPoint> forces;
 
     public:
         float cameraX;
@@ -73,7 +76,8 @@ namespace pengine
 
         void SetFocus(float focusX, float focusY, float focusZ);
 
-        void PutObject(Object object);
+        void PutObject(Object* object);
+        void PutForce(GravityPoint force);
 
         void SetupObjects();
         void SetupShaders();

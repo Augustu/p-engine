@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include <pengine/glsl/glsl.h>
 #include <stb/stb_image.h>
 
 namespace pengine
@@ -31,6 +32,72 @@ namespace pengine
         directory = modelPath.substr(0, modelPath.find_last_of('/'));
 
         processNode(scene->mRootNode, scene);
+    }
+
+    void Model::SetVertShaderPath(std::string vertShaderPath)
+    {
+        this->vertShaderPath = vertShaderPath;
+    }
+
+    void Model::SetFragShaderPath(std::string fragShaderPath)
+    {
+        this->fragShaderPath = fragShaderPath;
+    }
+
+    void Model::LoadVertShader()
+    {
+        std::string vertShaderStr = readShaderSource(vertShaderPath.c_str());
+
+        const char *vshaderSource = vertShaderStr.c_str();
+
+        vertShader = glCreateShader(GL_VERTEX_SHADER);
+
+        glShaderSource(vertShader, 1, &vshaderSource, NULL);
+
+        GLint success;
+        GLchar infoLog[512];
+
+        glCompileShader(vertShader);
+        glGetShaderiv(vertShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(vertShader, 512, NULL, infoLog);
+            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+            exit(-1);
+        }
+    }
+
+    void Model::LoadFragShader()
+    {
+        std::string fragShaderStr = readShaderSource(fragShaderPath.c_str());
+
+        const char *fshaderSource = fragShaderStr.c_str();
+
+        fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+        glShaderSource(fragShader, 1, &fshaderSource, NULL);
+
+        GLint success;
+        GLchar infoLog[512];
+
+        glCompileShader(fragShader);
+        glGetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(fragShader, 512, NULL, infoLog);
+            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+            exit(-1);
+        }
+    }
+
+    GLuint Model::VertShader()
+    {
+        return vertShader;
+    }
+
+    GLuint Model::FragShader()
+    {
+        return fragShader;
     }
 
     void Model::processNode(aiNode *node, const aiScene *scene)

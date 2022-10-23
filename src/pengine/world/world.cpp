@@ -64,9 +64,6 @@ namespace pengine
         double elapseTime = currentTime - this->currentTime;
         this->currentTime = currentTime;
 
-        updateObjects(elapseTime);
-        // updateBuffers();
-
         // get the uniform variables for the MV and projection matrices
         GLuint mvLoc = glGetUniformLocation(renderingProgram, "mv_matrix");
         GLuint projLoc = glGetUniformLocation(renderingProgram, "proj_matrix");
@@ -75,98 +72,68 @@ namespace pengine
         glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
         float aspect = (float)windowWidth / (float)windowHeight;
 
-        // glm::mat4 pMat = glm::perspective(1.0472f, aspect, 0.1f, 1000.0f); // 1.0472 radians = 60 degrees
+        glm::mat4 pMat = glm::perspective(2*1.0472f, aspect, 0.1f, 1000.0f); // 1.0472 radians = 60 degrees
+        // glm::mat4 pMat = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, -10.0f, 100.0f); // 1.0472 radians = 60 degrees
+        // glm::mat4 pMat = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, -10.0f, 100.0f); // 1.0472 radians = 60 degrees
 
-        // // build view matrix, model matrix, and model-view matrix
-        // glm::mat4 vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
-        // glm::mat4 mMat = glm::translate(glm::mat4(1.0f), glm::vec3(focusX, focusY, focusZ));
+        // build view matrix, model matrix, and model-view matrix
+        glm::mat4 vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
+        // glm::mat4 vMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -cameraZ));
 
-        int total = 3;
-
-        for (int i=0; i<total; ++i)
+        for (unsigned int i=0; i<glObjects.size(); ++i)
         {
+            GLObject glObject = glObjects[i];
 
-            glm::mat4 pMat = glm::perspective(2*1.0472f, aspect, 0.1f, 1000.0f); // 1.0472 radians = 60 degrees
-            // glm::mat4 pMat = glm::perspective(2*1.0472f, aspect, -0.1f, -1000.0f); // 1.0472 radians = 60 degrees
-            // glm::mat4 pMat = glm::perspective(0.0f, aspect, 0.1f, 1000.0f); // 1.0472 radians = 60 degrees
+            Object* object = objects[i];
 
-            // // build view matrix, model matrix, and model-view matrix
-            glm::mat4 vMat = glm::translate(glm::mat4(1.0f), glm::vec3(-cameraX, -cameraY, -cameraZ));
-            // glm::mat4 vMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 1000.0f));
-            // glm::mat4 vMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1000.0f));
-            // // glm::mat4 mMat = glm::translate(glm::mat4(1.0f), glm::vec3(focusX, focusY, focusZ));
+            // update force
+            for (GravityPoint force : forces)
+            {
+                force.UpdateForce(object);
+            }
 
-            // glm::mat4 tMat = glm::translate(glm::mat4(1.0f), glm::vec3(i*8.0f, 0.0f, 0.0f));
-            // glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f*i, glm::vec3(0.0f, 1.0f, 0.0f));
+            object->UpdatePosition(elapseTime);
 
-            // glm::mat4 mMat = glm::mat4(1.0f);
-            // glm::mat4 mMat = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f));
-            // glm::mat4 mMat = glm::translate(glm::mat4(1.0f), glm::vec3(currentTime*50.0f, 0.0f, 0.0f));
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-            model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+            glm::mat4 model = object->ModelMatrix();
+            // model = glm::rotate(model, 1.75f*float(currentTime), glm::vec3(0.0f, 0.0f, 1.0f));
 
-            model = glm::translate(model, glm::vec3(i*50.0f, 0.0f, 0.0f));
-            model = glm::rotate(model, -glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-            model = glm::rotate(model, 1.75f*float(currentTime), glm::vec3(0.0f, 0.0f, 1.0f));
-
-            // glm::mat4 mMat = glm::translate(glm::mat4(1.0f), glm::vec3(i*50.0f, 0.0f, 0.0f));
-            // glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f*float(currentTime), glm::vec3(0.0f, 1.0f, 0.0f));
-            // glm::mat4 mMat = glm::translate(glm::mat4(1.0f), glm::vec3((i+1)*50.0f, 0.0f, 0.0f));
-            // glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f*(i+1), glm::vec3(0.0f, 1.0f, 0.0f));
-            // glm::mat4 mMat = glm::translate(glm::mat4(1.0f), glm::vec3(i*50.0f, 0.0f, 0.0f));
-            // glm::mat4 rMat = glm::rotate(glm::mat4(1.0f), 1.75f*i, glm::vec3(0.0f, 1.0f, 0.0f));
-
-            // mMat = rMat * mMat;
-            // mMat = mMat * rMat;
-            // glm::mat4 mMat = rMat * tMat;
-            // glm::mat4 mMat = rMat * tMat;
-            // glm::mat4 mMat = tMat * rMat;
             glm::mat4 mvMat = vMat * model;
-            // glm::mat4 mvMat = vMat * mMat;
-            // glm::mat4 mvMat = vMat * rMat;
-            // glm::mat4 mvMat = vMat;
 
             // copy perspective and MV matrices to corresponding uniform variables
             glUniformMatrix4fv(mvLoc, 1, GL_FALSE, glm::value_ptr(mvMat));
             glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(pMat));
 
+            unsigned int diffuseNr  = 1;
+            unsigned int specularNr = 1;
+            unsigned int normalNr   = 1;
+            unsigned int heightNr   = 1;
 
-            for (unsigned int j=0; j<glObjects.size(); ++j)
+            for(unsigned int j = 0; j < glObject.glTextures.size(); j++)
             {
-                GLObject glObject = glObjects[j];
+                glActiveTexture(GL_TEXTURE0 + j); // active proper texture unit before binding
+                // retrieve texture number (the N in diffuse_textureN)
+                std::string number;
+                std::string name = glObject.glTextures[j].type;
+                if(name == "texture_diffuse")
+                    number = std::to_string(diffuseNr++);
+                else if(name == "texture_specular")
+                    number = std::to_string(specularNr++); // transfer unsigned int to string
+                else if(name == "texture_normal")
+                    number = std::to_string(normalNr++); // transfer unsigned int to string
+                else if(name == "texture_height")
+                    number = std::to_string(heightNr++); // transfer unsigned int to string
 
-                unsigned int diffuseNr  = 1;
-                unsigned int specularNr = 1;
-                unsigned int normalNr   = 1;
-                unsigned int heightNr   = 1;
-
-                for(unsigned int i = 0; i < glObject.glTextures.size(); i++)
-                {
-                    glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
-                    // retrieve texture number (the N in diffuse_textureN)
-                    std::string number;
-                    std::string name = glObject.glTextures[i].type;
-                    if(name == "texture_diffuse")
-                        number = std::to_string(diffuseNr++);
-                    else if(name == "texture_specular")
-                        number = std::to_string(specularNr++); // transfer unsigned int to string
-                    else if(name == "texture_normal")
-                        number = std::to_string(normalNr++); // transfer unsigned int to string
-                    else if(name == "texture_height")
-                        number = std::to_string(heightNr++); // transfer unsigned int to string
-
-                    // now set the sampler to the correct texture unit
-                    glUniform1i(glGetUniformLocation(renderingProgram, (name + number).c_str()), i);
-                    // and finally bind the texture
-                    glBindTexture(GL_TEXTURE_2D, glObject.glTextures[i].id);
-                }
-
-                glBindVertexArray(glObject.vao);
-                glDrawElements(GL_TRIANGLES, glObject.indicesSize, GL_UNSIGNED_INT, 0);
-                glBindVertexArray(0);
+                // now set the sampler to the correct texture unit
+                glUniform1i(glGetUniformLocation(renderingProgram, (name + number).c_str()), j);
+                // and finally bind the texture
+                glBindTexture(GL_TEXTURE_2D, glObject.glTextures[j].id);
             }
 
+            glBindVertexArray(glObject.vao);
+            glDrawElements(GL_TRIANGLES, glObject.indicesSize, GL_UNSIGNED_INT, 0);
+            glBindVertexArray(0);
+
+            object->ClearForce();
         }
 
     }
@@ -191,9 +158,14 @@ namespace pengine
         focusZ = focusZ;
     }
 
-    void World::PutObject(Object object)
+    void World::PutObject(Object* object)
     {
         objects.push_back(object);
+    }
+
+    void World::PutForce(GravityPoint force)
+    {
+        forces.push_back(force);
     }
 
     void World::SetupObjects()
@@ -204,9 +176,9 @@ namespace pengine
 
         for (int i = 0; i < numOfObjects; ++i)
         {
-            Object object = objects[i];
+            Object* object = objects[i];
 
-            std::vector<Mesh> meshes = object.GetMeshes();
+            std::vector<Mesh> meshes = object->GetMeshes();
 
             for (int m=0; m<meshes.size(); ++m)
             {
@@ -331,10 +303,10 @@ namespace pengine
 
     void World::SetupShaders()
     {
-        Object object = objects.at(0);
+        Object* object = objects.at(0);
 
-        GLuint vShader = object.VertShader();
-        GLuint fShader = object.FragShader();
+        GLuint vShader = object->VertShader();
+        GLuint fShader = object->FragShader();
 
         glAttachShader(renderingProgram, vShader);
         glAttachShader(renderingProgram, fShader);
@@ -347,7 +319,7 @@ namespace pengine
 
         for (int i = 0; i < numOfObjects; ++i)
         {
-            objects[i].Update(elapseTime);
+            objects[i]->Update(elapseTime);
         }
     }
 
