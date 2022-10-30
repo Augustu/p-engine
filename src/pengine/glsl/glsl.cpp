@@ -4,7 +4,8 @@
 #include <iostream>
 #include <fstream>
 
-#include <GL/glew.h>
+// #include <GL/glew.h>
+#include <QOpenGLFunctions>
 #include <SOIL2.h>
 
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -12,7 +13,6 @@
 #include <assimp/postprocess.h>     // Post processing flags
 
 using namespace std;
-
 
 string readShaderSource(const char *filePath)
 {

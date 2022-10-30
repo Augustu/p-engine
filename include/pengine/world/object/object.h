@@ -6,7 +6,8 @@
 
 #include <string>
 
-#include <GL/glew.h>
+#include <QOpenGLFunctions>
+#include <QMatrix4x4>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -14,12 +15,13 @@
 
 namespace pengine
 {
-    class Object : public MassPoint
+    class Object : public MassPoint, protected QOpenGLFunctions
     {
     private:
         Model* model;
 
         glm::mat4 modelMatrix = glm::mat4(1.0f);
+        QMatrix4x4 m_matrix = QMatrix4x4();
 
     public:
         Object();
@@ -36,6 +38,7 @@ namespace pengine
         GLuint FragShader();
 
         glm::mat4 ModelMatrix();
+        QMatrix4x4 QMatrix();
     };
 }
 

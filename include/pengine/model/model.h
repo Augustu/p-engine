@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
+#include <fstream>
 
-#include <GL/glew.h>
+#include <QOpenGLFunctions>
 #include <glm/glm.hpp>
 
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -48,7 +50,7 @@ namespace pengine
         std::vector<unsigned int> indices;
     };
 
-    class Model
+    class Model : protected QOpenGLFunctions
     {
     private:
         std::string modelPath;
@@ -62,12 +64,17 @@ namespace pengine
         GLuint vertShader;
         GLuint fragShader;
 
+        QOpenGLContext *m_context;
+
     protected:
         std::vector<float> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures_loaded;
         std::vector<Mesh> meshes;
 
+    private:
+        std::string readShaderSource(const char *filePath);
+        GLuint createShaderProgram(const char *vertShaderPath, const char *fragShaderPath);
 
     public:
         Model();

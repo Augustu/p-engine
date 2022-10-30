@@ -1,7 +1,8 @@
 #ifndef PENGINE_GLSL_H
 #define PENGINE_GLSL_H
 
-#include <GL/glew.h>
+// #include <GL/glew.h>
+#include <QOpenGLFunctions>
 
 #include <string>
 #include <vector>

@@ -1,6 +1,10 @@
 #ifndef PENGINE_COMMON_H
 #define PENGINE_COMMON_H
 
+#ifdef ERROR
+#undef ERROR
+#endif
+
 #include <glog/logging.h>
 
 using namespace google;

@@ -1,5 +1,7 @@
 #include <pengine/model/manager.h>
 
+#include <pengine/common.h>
+
 namespace pengine
 {
     ModelManager::ModelManager()

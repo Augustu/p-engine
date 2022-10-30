@@ -21,7 +21,8 @@
         {
             "name": "msys64",
             "includePath": [
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/include",
+                "D:/msys64/mingw64/include/qt6/QtGui"
             ],
             "defines": [
                 "_DEBUG",

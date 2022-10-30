@@ -65,6 +65,18 @@
         "shared_mutex": "cpp",
         "stop_token": "cpp",
         "thread": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "qwindow": "cpp",
+        "qmatrix4x4": "cpp",
+        "qtmath": "cpp",
+        "qopenglcontext": "cpp",
+        "qopenglfunctions": "cpp",
+        "qopenglpaintdevice": "cpp",
+        "qopenglshaderprogram": "cpp",
+        "optional": "cpp",
+        "future": "cpp",
+        "variant": "cpp",
+        "qopenglextrafunctions": "cpp",
+        "qguiapplication": "cpp"
     }
 }

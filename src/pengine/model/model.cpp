@@ -1,15 +1,30 @@
 #include <pengine/model/model.h>
 
-#include <iostream>
-
-#include <pengine/glsl/glsl.h>
 #include <stb/stb_image.h>
+
+#include <pengine/common.h>
+
+#include <QOffscreenSurface>
 
 namespace pengine
 {
     Model::Model()
     {
-        //
+        // auto *surface = new QOffscreenSurface;
+
+        // QSurfaceFormat format;
+
+        // format.setMajorVersion( 4 );
+        // format.setMinorVersion( 1 );
+        // format.setProfile( QSurfaceFormat::CompatibilityProfile );
+
+        // surface->setFormat(format);
+        // m_context = new QOpenGLContext();
+        // surface->create();
+        // m_context->makeCurrent(surface);
+        qDebug() << "Before";
+        initializeOpenGLFunctions();
+        qDebug() << "After";
     }
 
     void Model::SetModelPath(std::string modelPath)
@@ -21,6 +36,7 @@ namespace pengine
     {
         Assimp::Importer importer;
 
+        LOG(INFO) << "loading model " << modelPath;
         const aiScene* scene = importer.ReadFile(modelPath, aiProcess_Triangulate | aiProcess_FlipUVs);
         // Check for errors
         if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
@@ -65,6 +81,8 @@ namespace pengine
             std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
             exit(-1);
         }
+
+        LOG(INFO) << "LoadVertShader done";
     }
 
     void Model::LoadFragShader()
@@ -88,6 +106,8 @@ namespace pengine
             std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
             exit(-1);
         }
+
+        LOG(INFO) << "LoadFragShader done";
     }
 
     GLuint Model::VertShader()
@@ -263,6 +283,66 @@ namespace pengine
     std::vector<Mesh> Model::GetMeshes()
     {
         return meshes;
+    }
+
+    std::string Model::readShaderSource(const char *filePath)
+    {
+        std::string content;
+        std::ifstream fileSteam(filePath, std::ios::in);
+
+        std::string line = "";
+
+        while (!fileSteam.eof())
+        {
+            std::getline(fileSteam, line);
+            content.append(line + "\n");
+        }
+
+        fileSteam.close();
+        return content;
+    }
+
+    GLuint Model::createShaderProgram(const char *vertShaderPath, const char *fragShaderPath)
+    {
+        std::string vertShaderStr = readShaderSource(vertShaderPath);
+        std::string fragShaderStr = readShaderSource(fragShaderPath);
+
+        const char *vshaderSource = vertShaderStr.c_str();
+        const char *fshaderSource = fragShaderStr.c_str();
+
+        GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
+        GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+        glShaderSource(vShader, 1, &vshaderSource, NULL);
+        glShaderSource(fShader, 1, &fshaderSource, NULL);
+
+        GLint success;
+        GLchar infoLog[512];
+
+        glCompileShader(vShader);
+        glGetShaderiv(vShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(vShader, 512, NULL, infoLog);
+            std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+            exit(-1);
+        }
+
+        glCompileShader(fShader);
+        glGetShaderiv(fShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(fShader, 512, NULL, infoLog);
+            std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+            exit(-1);
+        }
+
+        GLuint vfProgram = glCreateProgram();
+        glAttachShader(vfProgram, vShader);
+        glAttachShader(vfProgram, fShader);
+        glLinkProgram(vfProgram);
+
+        return vfProgram;
     }
 
 } // namespace pengine

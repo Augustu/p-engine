@@ -4,6 +4,8 @@
 
 #include <pengine/glsl/glsl.h>
 
+#include <QDebug>
+
 namespace pengine
 {
     Object::Object()
@@ -47,12 +49,16 @@ namespace pengine
 
     glm::mat4 Object::ModelMatrix()
     {
-        // modelMatrix = glm::translate(modelMatrix, position);
         glm::vec3 position = this->GetPosition();
-        // LOG(INFO) << "ModelMatrix position " << position.x << " " << position.y << " " << position.z;
-        // LOG(INFO) << "offset " << offset.x << " " << offset.y << " " << offset.z;
-        // return modelMatrix;
         return glm::translate(modelMatrix, position);
+    }
+
+    QMatrix4x4 Object::QMatrix()
+    {
+        glm::vec3 position = this->GetPosition();
+        m_matrix.translate(position.x, position.y, position.z);
+
+        return m_matrix;
     }
 
 }

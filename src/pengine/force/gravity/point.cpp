@@ -25,13 +25,7 @@ namespace pengine
         force = glm::normalize(force);
 
         float length = glm::length(center - massPointPosition);
-        // LOG(INFO) << "length " << length;
         float strength = constG * mass * massPointMass / float(pow(length, 2));
-        // LOG(INFO) << "constG " << constG;
-        // LOG(INFO) << "mass " << mass;
-        // LOG(INFO) << "massPointMass " << massPointMass;
-
-        // LOG(INFO) << "ModelMatrix force " << force.x << " " << force.y << " " << force.z;
 
         force *= strength;
 
